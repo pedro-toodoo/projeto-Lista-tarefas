@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, date
 
 banco = sqlite3.connect('Lista_de_Tarefas.db')
 cursor = banco.cursor()
@@ -15,18 +15,30 @@ def criar_tabela():
 def adicionar_tarefa():
     tarefa = str(input('Tarefa a ser realizada: '))
     data = input("Data limite (DD/MM/AAAA): ")
+    while True:
+        try:
 
-    try:
-        datetime.strptime(data, "%d/%m/%Y")
-    except ValueError:
-        print("\033[31mERRO. Data no formato errado!\033[m")
+            datetime.strptime(data, "%d/%m/%Y")
+            hoje = datetime.today().strftime('%d/%m/%Y')
+            dia_dig, mes_dig, ano_dig = data.split('/')
+            dia_hoje, mes_hoje, ano_hoje = hoje.split('/')
 
-    else:
-        data_convertida = datetime.strptime(data, "%d/%m/%Y").date()
-        status = 'Pendente'
-        cursor.execute(f"INSERT INTO tarefas(tarefa, data, status) VALUES('{tarefa}','{data_convertida}', '{status}')")
-        banco.commit()
-        print('\033[32mTarefa Adicionada!\033[m')
+            if ano_dig < ano_hoje:
+                if mes_dig < mes_hoje:
+                    if dia_dig < dia_hoje:
+                        print('Não é possivel adicionar data no passado, tente novamente:')
+                        data = input("Data limite (DD/MM/AAAA): ")
+            else:
+                data_convertida = datetime.strptime(data, "%d/%m/%Y").date()
+                status = 'Pendente'
+                cursor.execute(
+                    f"INSERT INTO tarefas(tarefa, data, status) VALUES('{tarefa}','{data_convertida}', '{status}')")
+                banco.commit()
+                print('\033[32mTarefa Adicionada!\033[m')
+                break
+
+        except ValueError:
+            print("\033[31mERRO. Data no formato errado!\033[m")
 
 
 def listar_tarefas():
