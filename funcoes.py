@@ -24,18 +24,27 @@ def adicionar_tarefa():
             dia_hoje, mes_hoje, ano_hoje = hoje.split('/')
 
             if ano_dig < ano_hoje:
-                if mes_dig < mes_hoje:
-                    if dia_dig < dia_hoje:
-                        print('Não é possivel adicionar data no passado, tente novamente:')
-                        data = input("Data limite (DD/MM/AAAA): ")
+                print('Não é possivel adicionar data no passado, tente novamente:')
+                data = input("Data limite (DD/MM/AAAA): ")
+
             else:
-                data_convertida = datetime.strptime(data, "%d/%m/%Y").date()
-                status = 'Pendente'
-                cursor.execute(
-                    f"INSERT INTO tarefas(tarefa, data, status) VALUES('{tarefa}','{data_convertida}', '{status}')")
-                banco.commit()
-                print('\033[32mTarefa Adicionada!\033[m')
-                break
+                if dia_dig < dia_hoje and mes_dig < mes_hoje:
+                    print('Não é possivel adicionar data no passado, tente novamente:')
+                    data = input("Data limite (DD/MM/AAAA): ")
+                elif mes_dig < mes_hoje:
+                    print('Não é possivel adicionar data no passado, tente novamente:')
+                    data = input("Data limite (DD/MM/AAAA): ")
+                elif mes_dig == mes_hoje and dia_dig < dia_hoje:
+                    print('Não é possivel adicionar data no passado, tente novamente:')
+                    data = input("Data limite (DD/MM/AAAA): ")
+                else:
+                    data_convertida = datetime.strptime(data, "%d/%m/%Y").date()
+                    status = 'Pendente'
+                    cursor.execute(
+                        f"INSERT INTO tarefas(tarefa, data, status) VALUES('{tarefa}','{data_convertida}', '{status}')")
+                    banco.commit()
+                    print('\033[32mTarefa Adicionada!\033[m')
+                    break
 
         except ValueError:
             print("\033[31mERRO. Data no formato errado!\033[m")
